@@ -193,7 +193,7 @@ public:
             
             reductionChain.back().begin();
             ofSetColor(0);
-            ofRect(0, 0, w, h);
+            ofDrawRectangle(0, 0, w, h);
             reductionChain.back().end();
             i++;
         }
@@ -223,7 +223,7 @@ public:
         ofSetColor(255);
         ofSetRectMode(OF_RECTMODE_CENTER);
         for (int i = 0; i < x.size(); i++) {
-            ofCircle(x[i] / scalar, y[i] / scalar, circleRadius);
+            ofDrawCircle(x[i] / scalar, y[i] / scalar, circleRadius);
         }
         ofSetRectMode(OF_RECTMODE_CORNER);
         impulses.end();
@@ -247,7 +247,7 @@ public:
             
             heatmap.begin();
             gaussShader.begin();
-            gaussShader.setUniformTexture("image", heatmap2.getTextureReference(), 1);
+            gaussShader.setUniformTexture("image", heatmap2.getTexture(), 1);
             gaussShader.setUniform2f("width", 0.0f, kernelStepSize);
             heatmap2.draw(0, 0);
             gaussShader.end();
@@ -255,7 +255,7 @@ public:
             
             heatmap2.begin();
             gaussShader.begin();
-            gaussShader.setUniformTexture("image", heatmap.getTextureReference(), 0);
+            gaussShader.setUniformTexture("image", heatmap.getTexture(), 0);
             gaussShader.setUniform2f("width", kernelStepSize, 0.0f);
             heatmap.draw(0, 0);
             gaussShader.end();
@@ -271,7 +271,7 @@ public:
         finalFbo.begin();
         ofBackground(0);
         colormap.begin();
-        colormap.setUniformTexture("image", heatmap2.getTextureReference(), 0);
+        colormap.setUniformTexture("image", heatmap2.getTexture(), 0);
         colormap.setUniform1f("maxValue", maxValue);
         heatmap2.draw(0, 0, width*scalar, height*scalar);
         colormap.end();
@@ -285,7 +285,7 @@ public:
     
     ofTexture & getTextureReference()
     {
-        return finalFbo.getTextureReference();
+        return finalFbo.getTexture();
     }
     
 protected:
@@ -297,7 +297,7 @@ protected:
 #ifdef USE_REDUCTION_CHAIN
         reductionChain[0].begin();
         reduceShader.begin();
-        reduceShader.setUniformTexture("image", heatmap2.getTextureReference(), 0);
+        reduceShader.setUniformTexture("image", heatmap2.getTexture(), 0);
         heatmap2.draw(0, 0);
         reduceShader.end();
         reductionChain[0].end();
@@ -308,7 +308,7 @@ protected:
         while (i < reductionChain.size()) {
             reductionChain[i].begin();
             reduceShader.begin();
-            reduceShader.setUniformTexture("image", reductionChain[i-1].getTextureReference(), 0);
+            reduceShader.setUniformTexture("image", reductionChain[i-1].getTexture(), 0);
             reductionChain[i-1].draw(0, 0, reductionChain[i].getWidth(), reductionChain[i].getHeight());
             reduceShader.end();
             reductionChain[i].end();
@@ -319,7 +319,7 @@ protected:
 #else   
         heatmap2.readToPixels(pixels);
 #endif
-        float *pix = pixels.getPixels();
+        float *pix = pixels.getData();
         float maxValue = pix[0];
         for (int i = 0; i < pixels.size(); i++) {
             if (pix[i] > maxValue) {

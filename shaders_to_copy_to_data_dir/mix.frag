@@ -10,7 +10,8 @@ const float colorMax = 1.0;
 
 void main (void)
 {
-    float dist = (texture2DRect(img1, texcoordM).a + texture2DRect(img2, texcoordM).a) / (maxValue1 + maxValue2);
+    float dist = ((texture2DRect(img1, texcoordM).a / maxValue1) + (texture2DRect(img2, texcoordM).a / maxValue2)) / 2.0;
+    
     float max4 = 1.0 / 4.0;
     
     if(dist <= 0.0)
@@ -28,7 +29,6 @@ void main (void)
         gl_FragColor.g = (colorMax * (dist - max4) / max4);
         gl_FragColor.b = colorMax;
     }
-    
     else if(dist < 3.0 * max4)
     {
         gl_FragColor.r = (colorMax * (dist - 2.0 * max4) / max4);
@@ -47,6 +47,6 @@ void main (void)
         gl_FragColor.gb = vec2(0.0, 0.0);
     }
     
-    gl_FragColor.a = dist;
+    gl_FragColor.a = clamp(abs(dist * 2.0), 0.0, 1.0);
 
 }
